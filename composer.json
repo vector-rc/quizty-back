@@ -1,0 +1,21 @@
+{
+    "name": "fernando/open-forms",
+    "description": "",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "OpenForms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fernando Rodriguez",
+            "email": "fernando.rdcrz@gmail.com"
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev"
+}
