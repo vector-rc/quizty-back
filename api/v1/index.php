@@ -1,5 +1,10 @@
 <?php
-define('DATABASE_CONFIG', "../../config/database.ini");
+
+
+define('DB_CONFIG', "../../config/database.ini");
+
+define('JWT_PUBLIC_KEY', "../../config/jwt/public.pem");
+define('JWT_PRIVATE_KEY', "../../config/jwt/private.pem");
 define('DIR_IMAGES', "../../images");
 
 ini_set('display_errors', 1);
@@ -8,29 +13,69 @@ error_reporting(E_ALL);
 
 require_once '../../vendor/autoload.php';
 
-use OpenForms\Quiz\Quiz;
-use OpenForms\Quiz\QuizRepository;
-use OpenForms\User\AuthenticateUser;
-use OpenForms\Session\SessionCreator;
-use OpenForms\Session\SessionValidator;
-use OpenForms\SolvedQuiz\SolvedQuiz;
-use OpenForms\SolvedQuiz\SolvedQuizRepository;
-use OpenForms\User\UserRepository;
-use OpenForms\User\User;
-use OpenForms\Utils\Octopus\Octopus;
+if (!function_exists('str_starts_with')) {
+    function str_starts_with($haystack, $needle) {
+        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+}
+if (!function_exists('str_ends_with')) {
+    function str_ends_with($haystack, $needle) {
+        return $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle;
+    }
+}
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
+use Quizty\Quiz\Quiz;
+use Quizty\Quiz\QuizRepository;
+use Quizty\User\AuthenticateUser;
+use Quizty\Session\SessionCreator;
+use Quizty\Session\SessionValidator;
+use Quizty\SolvedQuiz\SolvedQuiz;
+use Quizty\SolvedQuiz\SolvedQuizRepository;
+use Quizty\User\UserRepository;
+use Quizty\User\User;
+use Quizty\Utils\JWT;
+use Quizty\Utils\Octopus\Octopus;
+use Quizty\Utils\Octopus\Response;
+use Quizty\Utils\Octopus\Request;
 
 header("Access-Control-Allow-Origin: *");
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Max-Age: 86400');
 
+
+
 $app = new Octopus();
-$app->post('/login', function ($req, $res) {
+
+$app->middleware(function(Request $req,Response $res){
+    $req->hola="esto es un hola";
+    $jwt=$req->body['jwt'];
+    $isValid=JWT::validate($jwt);
+    if(!$isValid) $res->status(401)->json(null,false,'error en el middelware');
+
+    $jwtDecoded=JWT::parser($jwt);
+    $req->user=$jwtDecoded;
+    return $req;
+});
+
+
+$app->post('/login', function (Request $req,Response $res) {
+
+    $jwt = JWT::create($req->body,[],60);
     $_authenticateUser = new AuthenticateUser($req->body['email'], $req->body['password']);
     $_user = $_authenticateUser();
     if ($_user) {
-        $_sessionCreator = new SessionCreator($_user);
 
-        $res->json($_sessionCreator(), true, 'Usuario logueado con exito');
+        $_sessionCreator = new SessionCreator($_user);
+        $data = $_sessionCreator();
+        $data['jwt'] = $jwt;
+        $data['hola']=$req->hola;
+
+        $res->json($data, true, 'Usuario logueado con exito');
         return;
     }
     $res->json(null, false, 'No se pudo completar el proceso de logueo');
@@ -72,7 +117,7 @@ $app->route('/quiz/:id')
         if ($_session) {
             $_qr = new QuizRepository();
             $_quiz = new Quiz(
-                $req->body['id'],
+                uniqid('', true),
                 $_session['user_id'],
                 $req->body['name'],
                 date('Y-m-d H:i:s'),
@@ -89,10 +134,17 @@ $app->route('/quiz/:id')
     });
 
 
-$app->get('/:user/quizes', function ($req, $res, $user) {
-    $_qr = new QuizRepository();
-    $quizes = $_qr->findByUser($user);
-    $res->json($quizes, true, 'lista de quizes');
+$app->get('/my_quizes', function ($req, $res) {
+    $_session_validator = new SessionValidator($req->cookies['session_id']);
+    $_session = $_session_validator();
+    if ($_session) {
+        $_qr = new QuizRepository();
+        $quizes = $_qr->findMinimizedByUser($_session['user_id']);
+        $res->json($quizes, true, 'lista de quizes');
+        return;
+    }
+
+    $res->json(null, false, 'Error al obterner los quizes de este usuario');
 });
 
 $app->post('/solved_quiz', function ($req, $res) {
@@ -110,9 +162,15 @@ $app->post('/solved_quiz', function ($req, $res) {
         $_session_validator = new SessionValidator($req->cookies['session_id']);
         $_session = $_session_validator();
         if ($_session) {
+            $quizRepo = new QuizRepository();
+            $quiz = $quizRepo->findById($req->body['quiz_id']);
+            if ($quiz['user_id'] === $_session['user_id']) {
+                $res->json(null, false, 'Error:No puede resolver su propio quiz.');
+                return;
+            }
             $_solved_quiz->user_id = $_session['user_id'];
-            $new_quiz = $_sqr->save($_solved_quiz);
-            $res->json($new_quiz, true, 'Respuestas guardadas exitosamente');
+            $new_solved_quiz = $_sqr->save($_solved_quiz);
+            $res->json($new_solved_quiz, true, 'Respuestas guardadas exitosamente');
             return;
         }
     } else {
@@ -120,8 +178,6 @@ $app->post('/solved_quiz', function ($req, $res) {
         $res->json($new_quiz, true, 'Respuestas guardadas exitosamente');
         return;
     }
-
-
     $res->json(null, false, 'Error guradando las respuestas');
 });
 
@@ -152,4 +208,16 @@ $app->get('statistics/:quiz_id', function ($req, $res, $quiz_id) {
 
     $res->json($data, true, 'Estadisticas obtenidas exitosamente');
     return;
+});
+
+$app->post('/test_jwt',function($req,$res){
+    $jwt=$req->body['jwt'];
+    $jwtDecoded=JWT::parser($jwt);
+    //print_r((array)$jwtDecoded);
+    $isValid=JWT::validate($jwt);
+    $data['jwt_decoded']=$jwtDecoded;
+    $data['jwt_valid']=$isValid;
+    //var_dump($data);
+   // print_r($data['jwt_decoded'].getClaims());
+    return $res->json($data, true, 'No se pudo completar el proceso de logueo');
 });

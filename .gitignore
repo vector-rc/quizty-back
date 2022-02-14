@@ -1,1 +1,7 @@
+request/
 *.rest
+*.pem
+*.ini 
+!config.dev.ini
+vendor
+.vscode

@@ -1,8 +1,8 @@
 <?php
 
-namespace OpenForms\User;
+namespace Quizty\User;
 
-use OpenForms\Utils\MysqlRepository;
+use Quizty\Utils\MysqlRepository;
 
 class UserRepository
 {

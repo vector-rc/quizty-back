@@ -1,9 +1,6 @@
 <?php
 
-namespace OpenForms\User;
-
-define(PASSWORD_DEFAULT, '1fc281');
-
+namespace Quizty\User;
 
 class EncryptPassword
 {

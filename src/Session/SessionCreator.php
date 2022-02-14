@@ -1,9 +1,9 @@
 <?php
 
-namespace OpenForms\Session;
+namespace Quizty\Session;
 
-use OpenForms\User\User;
-use OpenForms\Utils\MysqlRepository;
+use Quizty\User\User;
+use Quizty\Utils\MysqlRepository;
 
 final class SessionCreator
 {

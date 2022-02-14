@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenForms\Utils;
+namespace Quizty\Utils;
 
 use Exception;
 use PDO;
@@ -11,21 +11,21 @@ class MysqlRepository
 
     public function __construct()
     {
-        $file_path = DATABASE_CONFIG;
+        $file_path = DB_CONFIG;
         if (!$db_settings = parse_ini_file($file_path)) throw new Exception('Unable to open ' . $file_path . '.');
 
         $dsn = sprintf(
             '%s:dbname=%s;host=%s:%s',
-            $db_settings['driver'],
-            $db_settings['schema'],
-            $db_settings['host'],
-            $db_settings['port'],
+            $db_settings['db_driver'],
+            $db_settings['db_schema'],
+            $db_settings['db_host'],
+            $db_settings['db_port'],
         );
 
         $_connection = new PDO(
             $dsn,
-            $db_settings['username'],
-            $db_settings['password']
+            $db_settings['db_username'],
+            $db_settings['db_password']
         );
         $_connection->exec('SET CHARACTER SET UTF8');
         $this->connection = $_connection;;

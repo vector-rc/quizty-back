@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenForms\SolvedQuiz;
+namespace Quizty\SolvedQuiz;
 
 
 class SolvedQuiz

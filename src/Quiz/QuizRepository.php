@@ -1,6 +1,6 @@
 <?php
-namespace OpenForms\Quiz;
-use OpenForms\Utils\MysqlRepository;
+namespace Quizty\Quiz;
+use Quizty\Utils\MysqlRepository;
 
 final class QuizRepository
 {
@@ -43,6 +43,11 @@ final class QuizRepository
     public function findByUser($user)
     {
         $data = $this->repository->select('Quiz', null, 'user_id = :user_id and enable=1', ['user_id' => $user]);
+        return $data;
+    }
+    public function findMinimizedByUser($user)
+    {
+        $data = $this->repository->select('Quiz', null, 'user_id = :user_id and enable=1', ['user_id' => $user],'id,date_time,name');
         return $data;
     }
 

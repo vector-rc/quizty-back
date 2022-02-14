@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenForms\Quiz;
+namespace Quizty\Quiz;
 
 use DateTime;
 

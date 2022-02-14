@@ -1,11 +1,11 @@
 {
-    "name": "fernando/open-forms",
+    "name": "fernando/quizty",
     "description": "",
     "type": "project",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "OpenForms\\": "src/"
+            "Quizty\\": "src/"
         }
     },
     "authors": [
@@ -17,5 +17,8 @@
     "config": {
         "optimize-autoloader": true
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require": {
+        "lcobucci/jwt": "4.0.x-dev"
+    }
 }

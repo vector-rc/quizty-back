@@ -1,5 +1,5 @@
 <?php 
-namespace OpenForms\Shared;
+namespace Quizty\Shared;
 define(PASSWORD_DEFAULT, '1fc281');
 class Password{
     public function __construct(private $value)

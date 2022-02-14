@@ -1,8 +1,8 @@
 <?php
 
-namespace OpenForms\Category;
+namespace Quizty\Category;
 
-use OpenForms\Utils\MysqlRepository;
+use Quizty\Utils\MysqlRepository;
 
 final class CategoryRepository
 {

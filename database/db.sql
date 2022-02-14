@@ -1,5 +1,5 @@
 
-use OpenForms;
+use Quizty;
 
 CREATE TABLE Quiz (
 id VARCHAR(255) NOT NULL,

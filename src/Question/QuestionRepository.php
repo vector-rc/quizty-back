@@ -1,6 +1,6 @@
 <?php
-namespace OpenForms\Question;
-use OpenForms\Utils\MysqlRepository;
+namespace Quizty\Question;
+use Quizty\Utils\MysqlRepository;
 
 final class QuestionRepository
 {

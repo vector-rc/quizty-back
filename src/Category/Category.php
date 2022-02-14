@@ -1,5 +1,5 @@
 <?php 
-namespace OpenForms\Category;
+namespace Quizty\Category;
 final class Category
 {
     public function __construct(

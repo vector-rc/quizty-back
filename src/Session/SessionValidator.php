@@ -1,8 +1,8 @@
 <?php
 
-namespace OpenForms\Session;
+namespace Quizty\Session;
 
-use OpenForms\Utils\MysqlRepository;
+use Quizty\Utils\MysqlRepository;
 
 final class SessionValidator
 {

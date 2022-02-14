@@ -1,5 +1,5 @@
 <?php
-namespace OpenForms\Question;
+namespace Quizty\Question;
 
 class Question{
     public function __construct(

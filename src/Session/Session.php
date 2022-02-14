@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenForms\Session;
+namespace Quizty\Session;
 
 final class Session
 {

@@ -1,5 +1,5 @@
 <?php 
-namespace OpenForms\Shared;
+namespace Quizty\Shared;
 class Email{
     public function __construct(private $value)
     {

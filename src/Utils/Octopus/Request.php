@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenForms\Utils\Octopus;
+namespace Quizty\Utils\Octopus;
 
 class Request
 {

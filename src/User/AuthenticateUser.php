@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenForms\User;
+namespace Quizty\User;
 
 class AuthenticateUser
 {
